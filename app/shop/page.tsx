@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import ProductCard from "@/components/product/ProductCard";
@@ -30,7 +30,7 @@ const CATEGORIES = [
   "Decorations",
 ];
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "All";
   const [products, setProducts] = useState<Product[]>([]);
@@ -111,5 +111,20 @@ export default function ShopPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-10">
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground">Loading shop...</p>
+        </div>
+      </div>
+    }>
+      <ShopContent />
+    </Suspense>
   );
 }
